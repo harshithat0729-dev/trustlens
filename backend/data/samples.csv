@@ -1,0 +1,6 @@
+id,type,label_source,expected_label,actual_label,notes,response_ms
+1,link,official-warning,high_risk,,lookalike paytm domain,
+2,link,trusted-domain,no_known_warning_found,,official irctc page,
+3,message,manually-verified,high_risk,,fee-before-joining scam,
+4,message,manually-verified,no_known_warning_found,,benign coordination msg,
+5,claim,official-warning,inconclusive,,claim with no available source,

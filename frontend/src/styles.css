@@ -1,0 +1,33 @@
+:root { --teal:#0E9AA7; --navy:#0F2138; --coral:#E85A43; --amber:#D9910B; --green:#2A9D6B; --blue:#2D6CDF; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#F5F8FC; color:#1B2A3A; }
+.app { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 30px; margin: 8px 0 2px; color: var(--navy); }
+.tagline { color: var(--teal); font-weight: 700; margin: 0 0 14px; }
+.prompt { color:#5B6B7B; }
+.modes { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:16px 0; }
+.mode { padding:14px; border:1px solid #D8E0E8; border-radius:12px; background:#fff; font-weight:600; cursor:pointer; }
+.mode.active { border-color: var(--teal); background:#E3F3F4; color: var(--navy); }
+textarea { width:100%; padding:12px; border:1px solid #D8E0E8; border-radius:12px; font-size:15px; resize:vertical; }
+.primary { margin-top:12px; width:100%; padding:14px; border:0; border-radius:12px; background:var(--teal); color:#fff; font-size:16px; font-weight:700; cursor:pointer; }
+.primary:disabled { opacity:.5; cursor:default; }
+.lang { margin-top:20px; }
+.lang-label { font-size:13px; color:#5B6B7B; }
+.lang-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+.chip { padding:8px 14px; border:1px solid #D8E0E8; border-radius:999px; background:#fff; cursor:pointer; }
+.chip.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+.error { color: var(--coral); margin-top:12px; }
+.card { background:#fff; border:1px solid #E1E8F0; border-radius:16px; padding:20px; }
+.back { background:none; border:0; color:var(--blue); cursor:pointer; padding:0 0 10px; }
+.badge { display:inline-block; padding:8px 14px; border-radius:999px; color:#fff; font-weight:700; }
+.risk-high { background:var(--coral); }
+.risk-susp { background:var(--amber); }
+.risk-ok { background:var(--green); }
+.risk-inc { background:var(--blue); }
+.summary { font-size:16px; line-height:1.5; }
+.signals { padding-left:18px; }
+.signals li.flagged { color: var(--coral); }
+.signals li.ok { color: var(--green); }
+h4 { margin:18px 0 6px; color: var(--navy); }
+details { margin-top:16px; color:#5B6B7B; }
+.foot { margin-top:28px; font-size:12px; color:#7A8798; text-align:center; }
