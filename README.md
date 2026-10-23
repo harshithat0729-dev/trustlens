@@ -1,0 +1,3 @@
+# TrustLens
+
+Initializing repository...
