@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustLens — Before you trust it, check it.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1219;
+  --bg-grid:rgba(255,255,255,.028);
+  --surface:#111c26;
+  --surface-2:#16232f;
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.18);
+  --text:#e8eef4;
+  --text-dim:#8ba0b2;
+  --text-faint:#5d7386;
+  --amber:#d97706;
+  --amber-dim:rgba(217,119,6,.13);
+  --teal:#0891b2;
+  --teal-dim:rgba(8,145,178,.14);
+  --red:#dc2626;
+  --red-dim:rgba(220,38,38,.13);
+  --green:#0f9d58;
+  --green-dim:rgba(15,157,88,.13);
+  --font-body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:
+    linear-gradient(var(--bg-grid) 1px,transparent 1px) 0 0/100% 32px,
+    linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px) 0 0/32px 100%,
+    radial-gradient(900px 500px at 50% -10%,rgba(8,145,178,.10),transparent 70%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.55;
+  padding:0 0 80px;
+}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+.topbar{
+  border-bottom:1px solid var(--border);
+  background:rgba(11,18,25,.82);
+  backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:20;
+}
+.topbar-in{
+  max-width:920px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.lens{
+  width:30px;height:30px;flex:none;border-radius:50%;
+  border:2px solid var(--amber);
+  position:relative;
+}
+.lens::after{
+  content:'';position:absolute;inset:7px;border-radius:50%;
+  background:var(--teal);opacity:.85;
+}
+.brand-name{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.brand-tag{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.09em;
+  color:var(--text-faint);text-transform:uppercase;
+  border-left:1px solid var(--border-strong);padding-left:11px;
+}
+.spacer{flex:1 1 auto}
+.langswitch{display:flex;border:1px solid var(--border-strong);border-radius:7px;overflow:hidden}
+.langswitch button{
+  font-family:var(--font-mono);font-size:11.5px;letter-spacing:.05em;
+  background:transparent;color:var(--text-dim);border:0;
+  padding:6px 11px;cursor:pointer;transition:.15s;
+}
+.langswitch button.on{background:var(--amber-dim);color:var(--amber)}
+.langswitch button:hover:not(.on){color:var(--text)}
+
+/* ---------- hero ---------- */
+.hero{padding:44px 0 26px}
+.hero h1{
+  font-size:clamp(26px,4.4vw,38px);line-height:1.14;
+  letter-spacing:-.8px;font-weight:700;max-width:20ch;
+}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero p{margin-top:14px;color:var(--text-dim);max-width:56ch;font-size:15.5px}
+.hero .promise{
+  margin-top:18px;display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--font-mono);font-size:11.5px;letter-spacing:.05em;
+  color:var(--teal);border:1px solid rgba(8,145,178,.35);
+  background:var(--teal-dim);border-radius:6px;padding:7px 12px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:6px;margin:6px 0 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{
+  background:transparent;border:0;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--font-body);font-size:14.5px;font-weight:500;
+  padding:12px 16px;cursor:pointer;transition:.15s;margin-bottom:-1px;
+}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--amber);border-bottom-color:var(--amber)}
+
+/* ---------- panel ---------- */
+.panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:22px;margin-top:20px;
+}
+.fieldlabel{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-faint);margin-bottom:9px;display:block;
+}
+input[type=text],textarea{
+  width:100%;background:var(--surface-2);border:1px solid var(--border-strong);
+  border-radius:8px;color:var(--text);font-family:var(--font-mono);font-size:14px;
+  padding:13px 14px;outline:none;transition:.15s;resize:vertical;
+}
+textarea{min-height:130px;line-height:1.6;font-size:13.5px}
+input[type=text]:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(8,145,178,.13)}
+input::placeholder,textarea::placeholder{color:var(--text-faint)}
+
+.row{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.btn{
+  font-family:var(--font-body);font-size:14.5px;font-weight:600;
+  border-radius:8px;padding:11px 22px;cursor:pointer;border:1px solid transparent;
+  transition:.15s;
+}
+.btn-primary{background:var(--amber);color:#150c02}
+.btn-primary:hover{background:#ea8a0c}
+.btn-ghost{background:transparent;border-color:var(--border-strong);color:var(--text-dim)}
+.btn-ghost:hover{color:var(--text);border-color:var(--text-faint)}
+
+.samples{margin-top:18px;padding-top:16px;border-top:1px dashed var(--border)}
+.samples-label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:20px;
+  padding:7px 13px;cursor:pointer;transition:.15s;
+}
+.chip:hover{color:var(--amber);border-color:rgba(217,119,6,.45);background:var(--amber-dim)}
+
+/* ---------- result ---------- */
+#result{margin-top:22px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;animation:rise .35s ease both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.verdict{
+  display:flex;align-items:center;gap:14px;padding:18px 22px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.vbadge{
+  font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.09em;
+  padding:7px 14px;border-radius:6px;text-transform:uppercase;flex:none;
+}
+.v-scam{background:var(--red-dim);color:#f87171;border:1px solid rgba(220,38,38,.4)}
+.v-susp{background:var(--amber-dim);color:#f0a44a;border:1px solid rgba(217,119,6,.42)}
+.v-incon{background:rgba(139,160,178,.13);color:#a8bccd;border:1px solid rgba(139,160,178,.3)}
+.v-clear{background:var(--green-dim);color:#4ade80;border:1px solid rgba(15,157,88,.4)}
+.vtitle{font-size:16px;font-weight:600;line-height:1.35;min-width:0}
+.vsub{font-size:13px;color:var(--text-dim);margin-top:2px}
+
+.chain{padding:18px 22px;border-bottom:1px solid var(--border);background:rgba(8,145,178,.045)}
+.chain-title{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-bottom:13px}
+.hops{display:flex;flex-direction:column;gap:0}
+.hop{display:flex;align-items:flex-start;gap:11px;position:relative;padding-bottom:15px}
+.hop:last-child{padding-bottom:0}
+.hop::before{
+  content:'';position:absolute;left:6px;top:15px;bottom:0;width:1px;
+  background:var(--border-strong);
+}
+.hop:last-child::before{display:none}
+.hop-dot{
+  width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;
+  border:2px solid var(--text-faint);background:var(--bg);z-index:1;
+}
+.hop.danger .hop-dot{border-color:var(--red);background:var(--red-dim)}
+.hop.ok .hop-dot{border-color:var(--green);background:var(--green-dim)}
+.hop-body{min-width:0;flex:1}
+.hop-url{
+  font-family:var(--font-mono);font-size:12.5px;color:var(--text);
+  overflow-wrap:break-word;word-break:break-all;
+}
+.hop-note{font-size:12px;color:var(--text-dim);margin-top:3px}
+
+.evidence{padding:20px 22px}
+.ev-title{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-bottom:14px}
+.ev{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);min-width:0}
+.ev:last-child{border-bottom:0}
+.ev-mark{font-family:var(--font-mono);font-size:13px;font-weight:600;flex:none;width:16px;padding-top:1px}
+.ev-bad .ev-mark{color:#f87171}
+.ev-warn .ev-mark{color:#f0a44a}
+.ev-good .ev-mark{color:#4ade80}
+.ev-text{font-size:14px;color:var(--text-dim);min-width:0;overflow-wrap:break-word}
+.ev-text b{color:var(--text);font-weight:600}
+.ev-text code{font-family:var(--font-mono);font-size:12.5px;background:var(--surface-2);padding:1.5px 5px;border-radius:4px;color:#9fd0e0;overflow-wrap:break-word}
+
+.next{padding:18px 22px;background:var(--surface-2);border-top:1px solid var(--border)}
+.next-title{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px}
+.next ol{margin-left:18px;display:flex;flex-direction:column;gap:8px}
+.next li{font-size:14px;color:var(--text-dim)}
+.next li b{color:var(--text);font-weight:600}
+
+.footnote{padding:14px 22px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-faint);line-height:1.5}
+
+/* ---------- footer ---------- */
+.sitefoot{
+  margin-top:44px;padding-top:22px;border-top:1px solid var(--border);
+  font-size:12.5px;color:var(--text-faint);line-height:1.65;
+}
+.sitefoot b{color:var(--text-dim);font-weight:600}
+.kv{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.kv span{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;color:var(--text-faint);
+  border:1px solid var(--border);border-radius:5px;padding:5px 9px;text-transform:uppercase;
+}
+@media(max-width:600px){
+  .hero{padding:30px 0 20px}
+  .brand-tag{display:none}
+  .panel{padding:17px}
+  .verdict,.chain,.evidence,.next,.footnote{padding-left:16px;padding-right:16px}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <div class="lens"></div>
+      <div>
+        <div class="brand-name">TrustLens</div>
+      </div>
+    </div>
+    <div class="brand-tag">Before you trust it, check it</div>
+    <div class="spacer"></div>
+    <div class="langswitch">
+      <button id="lang-en" class="on" onclick="setLang('en')">EN</button>
+      <button id="lang-te" onclick="setLang('te')">తెలుగు</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1 data-i18n="h1">We don't tell you it's <em>safe</em>. We show you <em>why</em>.</h1>
+    <p data-i18n="sub">Paste a link or a message. TrustLens shows the redirect chain, the real domain, and the exact red flags — in plain language.</p>
+    <div class="promise"><span class="dot"></span><span data-i18n="promise">No verdict without evidence</span></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" id="tab-link" onclick="setTab('link')" data-i18n="tabLink">Check a link</button>
+    <button class="tab" id="tab-msg" onclick="setTab('msg')" data-i18n="tabMsg">Check a message</button>
+  </div>
+
+  <div class="panel" id="panel-link">
+    <label class="fieldlabel" for="linkinput" data-i18n="linkLabel">Link you received</label>
+    <input type="text" id="linkinput" placeholder="https://sbi-kyc-update.xyz/verify" autocomplete="off" spellcheck="false">
+    <div class="row">
+      <button class="btn btn-primary" onclick="checkLink()" data-i18n="btnCheck">Check this link</button>
+      <button class="btn btn-ghost" onclick="clearResult()" data-i18n="btnClear">Clear</button>
+    </div>
+    <div class="samples">
+      <div class="samples-label" data-i18n="tryThese">Try a sample</div>
+      <div class="chips">
+        <span class="chip" onclick="loadSample('link',0)" data-i18n="s1">Bank KYC link</span>
+        <span class="chip" onclick="loadSample('link',1)" data-i18n="s2">Shortened link</span>
+        <span class="chip" onclick="loadSample('link',2)" data-i18n="s3">Genuine SBI link</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-msg" style="display:none">
+    <label class="fieldlabel" for="msginput" data-i18n="msgLabel">Message you received</label>
+    <textarea id="msginput" placeholder="Paste the full message here, including the sender name if you have it."></textarea>
+    <div class="row">
+      <button class="btn btn-primary" onclick="checkMsg()" data-i18n="btnCheck">Check this message</button>
+      <button class="btn btn-ghost" onclick="clearResult()" data-i18n="btnClear">Clear</button>
+    </div>
+    <div class="samples">
+      <div class="samples-label" data-i18n="tryThese">Try a sample</div>
+      <div class="chips">
+        <span class="chip" onclick="loadSample('msg',0)" data-i18n="m1">Fake internship</span>
+        <span class="chip" onclick="loadSample('msg',1)" data-i18n="m2">Digital arrest</span>
+        <span class="chip" onclick="loadSample('msg',2)" data-i18n="m3">Bank OTP</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="sitefoot">
+    <b>TrustLens</b> — <span data-i18n="foot1">Checks are rule-based and explainable. Every verdict shows its evidence, so you can disagree with us.</span>
+    <div class="kv">
+      <span>No login</span><span>No message stored</span><span>Explainable rules</span><span>Telugu + English</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   TrustLens — explainable link & message checker
+   Prototype build. Rules engine runs fully client-side.
+   ============================================================ */
+
+const I18N = {
+  en: {
+    h1:"We don't tell you it's <em>safe</em>. We show you <em>why</em>.",
+    sub:"Paste a link or a message. TrustLens shows the redirect chain, the real domain, and the exact red flags — in plain language.",
+    promise:"No verdict without evidence",
+    tabLink:"Check a link", tabMsg:"Check a message",
+    linkLabel:"Link you received", msgLabel:"Message you received",
+    btnCheck:"Check", btnClear:"Clear", tryThese:"Try a sample",
+    s1:"Bank KYC link", s2:"Shortened link", s3:"Genuine SBI link",
+    m1:"Fake internship", m2:"Digital arrest", m3:"Bank OTP",
+    foot1:"Checks are rule-based and explainable. Every verdict shows its evidence, so you can disagree with us.",
+    evTitle:"Evidence", chainTitle:"Where this link actually goes",
+    nextTitle:"What to do now", inconNote:"We could not confirm this is safe — and we never will. Verify before you act."
+  },
+  te: {
+    h1:"మేము <em>సేఫ్</em> అని చెప్పము. <em>ఎందుకో</em> చూపిస్తాము.",
+    sub:"లింక్ లేదా మెసేజ్ పేస్ట్ చేయండి. రీడైరెక్ట్ చెయిన్, అసలు డొమైన్, మరియు ఖచ్చితమైన రెడ్ ఫ్లాగ్స్ — సులభమైన భాషలో చూపిస్తాము.",
+    promise:"సాక్ష్యం లేకుండా తీర్పు లేదు",
+    tabLink:"లింక్ చెక్ చేయండి", tabMsg:"మెసేజ్ చెక్ చేయండి",
+    linkLabel:"మీకు వచ్చిన లింక్", msgLabel:"మీకు వచ్చిన మెసేజ్",
+    btnCheck:"చెక్ చేయండి", btnClear:"క్లియర్", tryThese:"స్యాంపిల్ ప్రయత్నించండి",
+    s1:"బ్యాంక్ KYC లింక్", s2:"షార్ట్ లింక్", s3:"నిజమైన SBI లింక్",
+    m1:"ఫేక్ ఇంటర్న్షిప్", m2:"డిజిటల్ అరెస్ట్", m3:"బ్యాంక్ OTP",
+    foot1:"చెక్స్ అన్నీ రూల్స్ ఆధారితం, వివరణతో. ప్రతి తీర్పుకు సాక్ష్యం ఉంటుంది — మీరు మాతో విభేదించవచ్చు.",
+    evTitle:"సాక్ష్యం", chainTitle:"ఈ లింక్ నిజంగా ఎక్కడికి వెళ్తుంది",
+    nextTitle:"ఇప్పుడు ఏం చేయాలి", inconNote:"ఇది సేఫ్ అని మేము నిర్ధారించలేము — ఎప్పటికీ నిర్ధారించము. చర్య తీసుకునే ముందు వెరిఫై చేయండి."
+  }
+};
+let LANG='en';
+const t = k => (I18N[LANG][k] !== undefined ? I18N[LANG][k] : I18N.en[k]);
+
+function setLang(l){
+  LANG=l;
+  document.getElementById('lang-en').classList.toggle('on', l==='en');
+  document.getElementById('lang-te').classList.toggle('on', l==='te');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(I18N[l][k]!==undefined) el.innerHTML=I18N[l][k];
+  });
+  document.querySelectorAll('.btn-primary').forEach(b=>b.textContent=t('btnCheck'));
+  document.querySelectorAll('.btn-ghost').forEach(b=>b.textContent=t('btnClear'));
+  clearResult();
+}
+
+/* ---------- trusted domains ---------- */
+const TRUSTED = ['sbi.co.in','onlinesbi.sbi','rbi.org.in','npci.org.in','incometax.gov.in',
+  'uidai.gov.in','gov.in','nic.in','irctc.co.in','epfindia.gov.in','google.com',
+  'amazon.in','flipkart.com','paytm.com','phonepe.com','hdfcbank.com','icicibank.com',
+  'axisbank.com','kotak.com','licindia.in','indiapost.gov.in','digilocker.gov.in'];
+
+const SHORTENERS = ['bit.ly','tinyurl.com','t.co','rb.gy','cutt.ly','shorturl.at',
+  'is.gd','adf.ly','rebrand.ly','tiny.cc','ow.ly','buff.ly','shorte.st','bl.ink'];
+
+const BAD_TLDS = ['.xyz','.top','.click','.icu','.online','.site','.live','.buzz','.rest','.cf','.gq','.tk','.ml','.ga'];
+
+const BRANDS = ['sbi','hdfc','icici','axis','kotak','paytm','phonepe','gpay','upi','amazon',
+  'flipkart','netflix','irctc','epfo','uidai','aadhaar','rbi','incometax','lic','post'];
+
+/* ---------- helpers ---------- */
+function domainOf(host){
+  const p = host.split('.');
+  if(p.length<=2) return host;
+  return p.slice(-2).join('.');
+}
+function isTrusted(host){
+  const d = domainOf(host);
+  return TRUSTED.some(x => host===x || host.endsWith('.'+x) || d===x);
+}
+function safeParse(u){
+  try{ return new URL(u.trim().startsWith('http')?u.trim():'http://'+u.trim()); }
+  catch(e){ return null; }
+}
+
+/* ---------- link rules ---------- */
+function analyseLink(raw){
+  const ev=[]; let score=0;
+  const url=safeParse(raw);
+  if(!url) return {verdict:'inconclusive', ev:[{type:'warn',text:'That does not look like a valid link.'}], next:[], chain:[]};
+
+  const host=url.hostname.toLowerCase();
+  const trusted=isTrusted(host);
+  const base=domainOf(host);
+  const chain=[];
+
+  chain.push({url:raw.trim(), note:host, cls:trusted?'ok':'danger'});
+
+  // protocol
+  if(url.protocol==='http:'){
+    score+=2;
+    ev.push({type:'bad',text:'This link is not encrypted. It uses <code>http://</code> instead of <code>https://</code> — anything you type can be read in transit.'});
+  }
+
+  // shortener
+  const isShort = SHORTENERS.includes(base);
+  if(isShort){
+    score+=2;
+    chain.push({url:'… hidden redirect …', note:'Shortened link — the real destination is hidden until you click.', cls:'danger'});
+    ev.push({type:'warn',text:'This is a <b>link shortener</b> (<code>'+base+'</code>). The real destination is hidden on purpose.'});
+  }
+
+  // brand impersonation
+  const brandHit = BRANDS.find(b => host.includes(b));
+  if(brandHit && !trusted){
+    score+=3;
+    ev.push({type:'bad',text:'It uses the name <b>'+brandHit.toUpperCase()+'</b> in the address, but the real domain is <code>'+base+'</code> — not the official one.'});
+  }
+
+  // bad tld
+  const badTld = BAD_TLDS.find(x => base.endsWith(x));
+  if(badTld && !trusted){
+    score+=2;
+    ev.push({type:'bad',text:'The domain ends in <code>'+badTld+'</code>. Cheap domains on this ending are heavily used for phishing.'});
+  }
+
+  // punycode
+  if(host.includes('xn--')){
+    score+=3;
+    ev.push({type:'bad',text:'The address uses <b>punycode</b> (<code>xn--</code>) — it can display foreign characters that look exactly like English letters.'});
+  }
+
+  // IP host
+  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(host)){
+    score+=3;
+    ev.push({type:'bad',text:'The link points to a raw <b>IP address</b>, not a named website. Real banks never do this.'});
+  }
+
+  // deep subdomains
+  const parts = host.split('.');
+  if(parts.length>=4 && !trusted){
+    score+=1;
+    ev.push({type:'warn',text:'The address has <b>'+parts.length+' levels</b> — long chains of subdomains are used to push the real domain out of view.'});
+  }
+
+  // hyphenated brand
+  if(/-/.test(host) && brandHit && !trusted){
+    score+=1;
+    ev.push({type:'warn',text:'Hyphenated brand names in the domain (<code>'+host+'</code>) are a classic impersonation pattern.'});
+  }
+
+  // trusted positive
+  if(trusted){
+    ev.push({type:'good',text:'<code>'+base+'</code> is on our verified list of official domains.'});
+  }
+
+  // path bait
+  if(/(verify|kyc|update|login|secure|account|block|suspend|refund|otp)/i.test(url.pathname+url.search)){
+    score+=1;
+    ev.push({type:'warn',text:'The path contains <code>'+ (url.pathname+url.search).slice(0,40) +'</code> — urgency words like these are used to rush you.'});
+  }
+
+  let verdict;
+  if(trusted && score===0) verdict='clear';
+  else if(score>=4) verdict='scam';
+  else if(score>=1) verdict='suspicious';
+  else verdict='inconclusive';
+
+  return {verdict, ev, chain, host, base, score};
+}
+
+/* ---------- message rules ---------- */
+const MSG_RULES = [
+  {re:/\b(otp|one[- ]time password|cvv|pin)\b/i, w:3, txt:'It asks for an <b>OTP, PIN or CVV</b>. No bank, company or government office will ever ask for these.'},
+  {re:/digital arrest/i, w:6, txt:'It says you are under <b>"digital arrest"</b>. This does not exist in Indian law. It is a scam script, always.'},
+  {re:/\b(cbi|narcotics|customs|enforcement directorate|arrest warrant|supreme court notice)\b/i, w:3, txt:'It claims to be from <b>a law enforcement agency</b> over a message. Real agencies serve notices in writing, not over chat.'},
+  {re:/(registration fee|processing fee|security deposit|pay .{0,12}to (get|receive|claim))/i, w:3, txt:'It asks you to <b>pay money to receive something</b>. Legitimate employers and schemes never charge you to pay you.'},
+  {re:/(lottery|prize|winner|kbc|lucky draw|crore|jackpot)/i, w:3, txt:'It promises a <b>prize or lottery win</b> you never entered for.'},
+  {re:/(kyc|know your customer).{0,40}(expire|block|suspend|update|deactivat)/i, w:3, txt:'It threatens <b>KYC expiry or account block</b> — the most common bank phishing hook.'},
+  {re:/(electricity|power|water|gas).{0,30}(disconnect|cut|block)/i, w:3, txt:'It threatens to <b>disconnect a utility</b>. Real boards send a printed notice, not a WhatsApp link.'},
+  {re:/(bit\.ly|tinyurl|t\.co|rb\.gy|cutt\.ly|shorturl)/i, w:2, txt:'It contains a <b>shortened link</b>, so you cannot see where it goes.'},
+  {re:/(upi|gpay|phonepe|paytm).{0,25}(request|collect|approve|scan)/i, w:3, txt:'It asks you to <b>approve a UPI collect request or scan a QR</b>. Approving sends money out — it never receives.'},
+  {re:/(urgent|immediately|within 24 ?hours|last chance|final warning|today only)/i, w:2, txt:'It creates <b>artificial urgency</b>, so you act before you think.'},
+  {re:/(congratulations|selected|shortlisted).{0,60}(fee|pay|deposit|amount)/i, w:3, txt:'It says you were <b>selected and then asks for money</b> — the standard fake-job pattern.'},
+  {re:/(@gmail\.com|@outlook\.com|@yahoo\.com).{0,0}/i, w:1, txt:'A free email address is being used — banks and government offices use their own domains.'},
+  {re:/(aadhaar|pan).{0,30}(send|share|photo|upload)/i, w:3, txt:'It asks you to <b>share Aadhaar or PAN</b> over chat. Never send identity documents to a chat contact.'},
+  {re:/(whatsapp|telegram).{0,20}(only|group|join)/i, w:1, txt:'It pushes you to a <b>WhatsApp or Telegram group</b> — where nothing can be verified or traced.'}
+];
+
+function analyseMsg(raw){
+  const text=raw.trim();
+  const ev=[]; let score=0;
+  if(text.length<12){
+    return {verdict:'inconclusive', ev:[{type:'warn',text:'That is too short to check. Paste the full message.'}], next:[]};
+  }
+  MSG_RULES.forEach(r=>{
+    if(r.re.test(text)){ score+=r.w; ev.push({type: r.w>=3?'bad':'warn', text:r.txt}); }
+  });
+
+  // link inside message
+  const linkMatch = text.match(/https?:\/\/[^\s]+/i);
+  let inner=null;
+  if(linkMatch){
+    inner = analyseLink(linkMatch[0]);
+    if(inner.verdict==='scam'){ score+=3; ev.push({type:'bad',text:'The link inside this message is itself suspicious — see the link check.'}); }
+  }
+
+  if(ev.length===0){
+    ev.push({type:'warn',text:'No known red flags matched — but that is <b>not</b> proof this is genuine. New scams have no history.'});
+    return {verdict:'inconclusive', ev, next:defaultNext('inconclusive'), inner};
+  }
+
+  let verdict;
+  if(score>=6) verdict='scam';
+  else if(score>=3) verdict='suspicious';
+  else verdict='inconclusive';
+
+  return {verdict, ev, inner, score};
+}
+
+/* ---------- next steps ---------- */
+function defaultNext(v){
+  const common=[
+    '<b>Do not reply</b> and do not click anything in it.',
+    'Verify independently — call the number printed on your bank card or passbook, never the one in the message.',
+    'If money already left your account, call <b>1930</b> immediately and report at <b>cybercrime.gov.in</b>.'
+  ];
+  if(v==='clear') return [
+    'The domain matches an official one — but still check what the page is asking for.',
+    'Type the address yourself instead of clicking, when you can.'
+  ];
+  return common;
+}
+
+/* ---------- render ---------- */
+const VERDICT_META = {
+  scam:{cls:'v-scam', en:['High risk','Multiple strong fraud signals matched.'], te:['అధిక ప్రమాదం','బలమైన మోసం సంకేతాలు కనిపించాయి.']},
+  suspicious:{cls:'v-susp', en:['Suspicious','Some red flags matched. Verify before acting.'], te:['అనుమానాస్పదం','కొన్ని రెడ్ ఫ్లాగ్స్ ఉన్నాయి. చర్య ముందు వెరిఫై చేయండి.']},
+  inconclusive:{cls:'v-incon', en:['Cannot confirm','We found no proof either way. Never treat this as safe.'], te:['నిర్ధారించలేము','ఏ వైపూ రుజువు లేదు. దీన్ని సేఫ్ అని ఎప్పుడూ భావించకండి.']},
+  clear:{cls:'v-clear', en:['No red flags found','This domain is on our verified list.'], te:['రెడ్ ఫ్లాగ్స్ లేవు','ఈ డొమైన్ మా వెరిఫైడ్ జాబితాలో ఉంది.']}
+};
+
+function renderLink(res){
+  const m=VERDICT_META[res.verdict];
+  const vi=LANG==='te'?1:0;
+  let chainHtml='';
+  if(res.chain && res.chain.length){
+    chainHtml='<div class="chain"><div class="chain-title">'+t('chainTitle')+'</div><div class="hops">'+
+      res.chain.map(h=>'<div class="hop '+(h.cls||'')+'"><div class="hop-dot"></div><div class="hop-body"><div class="hop-url">'+
+        esc(h.url)+'</div>'+(h.note?'<div class="hop-note">'+esc(h.note)+'</div>':'')+'</div></div>').join('')+
+      '</div></div>';
+  }
+  const evHtml='<div class="evidence"><div class="ev-title">'+t('evTitle')+'</div>'+
+    res.ev.map(e=>'<div class="ev ev-'+(e.type==='bad'?'bad':e.type==='good'?'good':'warn')+'">'+
+      '<div class="ev-mark">'+(e.type==='bad'?'✕':e.type==='good'?'✓':'!')+'</div>'+
+      '<div class="ev-text">'+e.text+'</div></div>').join('')+'</div>';
+
+  const next=res.next||defaultNext(res.verdict);
+  const nextHtml='<div class="next"><div class="next-title">'+t('nextTitle')+'</div><ol>'+
+    next.map(n=>'<li>'+n+'</li>').join('')+'</ol></div>';
+
+  document.getElementById('result').innerHTML =
+    '<div class="card"><div class="verdict">'+
+      '<div class="vbadge '+m.cls+'">'+esc(m[LANG==='te'?'te':'en'][0])+'</div>'+
+      '<div style="min-width:0"><div class="vtitle">'+esc(m[LANG==='te'?'te':'en'][1])+'</div>'+
+      '<div class="vsub">'+esc(res.host||'')+'</div></div>'+
+    '</div>'+chainHtml+evHtml+nextHtml+
+    '<div class="footnote">'+(LANG==='te'?I18N.te.inconNote:I18N.en.inconNote)+'</div></div>';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- actions ---------- */
+function checkLink(){
+  const v=document.getElementById('linkinput').value.trim();
+  if(!v) return;
+  const res=analyseLink(v);
+  renderLink(res);
+}
+function checkMsg(){
+  const v=document.getElementById('msginput').value.trim();
+  if(!v) return;
+  const res=analyseMsg(v);
+  const m=VERDICT_META[res.verdict];
+  let extra='';
+  if(res.inner && res.inner.chain && res.inner.chain.length){
+    extra='<div class="chain"><div class="chain-title">'+t('chainTitle')+'</div><div class="hops">'+
+      res.inner.chain.map(h=>'<div class="hop '+(h.cls||'')+'"><div class="hop-dot"></div><div class="hop-body"><div class="hop-url">'+
+      esc(h.url)+'</div>'+(h.note?'<div class="hop-note">'+esc(h.note)+'</div>':'')+'</div></div>').join('')+'</div></div>';
+  }
+  document.getElementById('result').innerHTML =
+    '<div class="card"><div class="verdict">'+
+      '<div class="vbadge '+m.cls+'">'+esc(m[LANG==='te'?'te':'en'][0])+'</div>'+
+      '<div style="min-width:0"><div class="vtitle">'+esc(m[LANG==='te'?'te':'en'][1])+'</div></div>'+
+    '</div>'+extra+
+    '<div class="evidence"><div class="ev-title">'+t('evTitle')+'</div>'+
+      res.ev.map(e=>'<div class="ev ev-'+(e.type==='bad'?'bad':e.type==='good'?'good':'warn')+'">'+
+      '<div class="ev-mark">'+(e.type==='bad'?'✕':'!')+'</div>'+
+      '<div class="ev-text">'+e.text+'</div></div>').join('')+'</div>'+
+    '<div class="next"><div class="next-title">'+t('nextTitle')+'</div><ol>'+
+      (res.next||defaultNext(res.verdict)).map(n=>'<li>'+n+'</li>').join('')+'</ol></div>'+
+    '<div class="footnote">'+(LANG==='te'?I18N.te.inconNote:I18N.en.inconNote)+'</div></div>';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+const SAMPLES = {
+  link:[
+    'http://sbi-kyc-update.xyz/verify?id=8842',
+    'https://bit.ly/3xKycNow',
+    'https://onlinesbi.sbi/'
+  ],
+  msg:[
+    'Congratulations! You have been SELECTED for a 3-month internship at Infosys. To confirm your seat, pay a registration fee of Rs 1,500 within 24 hours. Reply on this number.',
+    'This is Inspector Sharma from CBI. A parcel in your name was found with narcotics. You are under digital arrest. Do not tell anyone. Join this WhatsApp video call immediately or a warrant will be issued.',
+    'Dear customer, your SBI KYC will expire today. Your account will be blocked. Update now: http://sbi-kyc-update.xyz/verify'
+  ]
+};
+function loadSample(kind,i){
+  if(kind==='link'){ document.getElementById('linkinput').value=SAMPLES.link[i]; checkLink(); }
+  else { document.getElementById('msginput').value=SAMPLES.msg[i]; checkMsg(); }
+}
+function setTab(k){
+  document.getElementById('tab-link').classList.toggle('on',k==='link');
+  document.getElementById('tab-msg').classList.toggle('on',k==='msg');
+  document.getElementById('panel-link').style.display = k==='link'?'block':'none';
+  document.getElementById('panel-msg').style.display = k==='msg'?'block':'none';
+  clearResult();
+}
+function clearResult(){ document.getElementById('result').innerHTML=''; }
+</script>
+</body>
+</html>
